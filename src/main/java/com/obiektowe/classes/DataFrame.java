@@ -7,8 +7,7 @@ import java.util.List;
 
 public class DataFrame {
 
-    private List<Col> cols;
-
+    protected List<Col> cols;
 
     public DataFrame(String[] colsNames, String[] colsTypes) throws Exception {
         if (colsNames.length != colsTypes.length) {
@@ -28,7 +27,6 @@ public class DataFrame {
     private DataFrame(Col col) {
         cols.add(col);
     }
-
 
     public int size() {
         return this.cols.size();
