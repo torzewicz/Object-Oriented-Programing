@@ -13,7 +13,7 @@ public class DataFrame {
             throw new Exception("Not equal lists size");
         }
 
-        this.cols = new ArrayList<Col>();
+        this.cols = new ArrayList<>();
 
         for (int i = 0; i < colsNames.length; i++) {
             this.cols.add((new Col(colsNames[i], colsTypes[i])));
@@ -32,10 +32,10 @@ public class DataFrame {
         return this.cols.size();
     }
 
-    public Col get(String colname) {
+    public Col get(String colName) {
 
         for (Col col : this.cols) {
-            if (col.getName().equals(colname)) {
+            if (col.getName().equals(colName)) {
                 return col;
             }
         }
@@ -77,10 +77,14 @@ public class DataFrame {
         System.out.println("=================================");
 
         for (Col col : this.cols) {
-            System.out.print(col.getName() + " ");
-        }
+            System.out.print(col.getName() + ": ");
 
-        System.out.println("");
+            for (Object object : col.getObjects()) {
+                System.out.print(object + ", ");
+            }
+
+            System.out.println("\n");
+        }
 
     }
 

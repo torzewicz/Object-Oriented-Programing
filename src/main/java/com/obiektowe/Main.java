@@ -22,6 +22,14 @@ public class Main {
         dataFrame.insert("Imie", "Pawel");
         dataFrame.insert("Wiek", 17);
 
+        dataFrame.dropDatabase();
+
+        dataFrame.insert("Imie", "Typek");
+        dataFrame.insert("Wiek", 7);
+
+        dataFrame.dropDatabase();
+
+
 
     }
 
