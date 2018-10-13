@@ -1,5 +1,7 @@
 package com.obiektowe.classes;
 
+import java.util.ArrayList;
+
 public class Col {
 
     private String name;
@@ -19,10 +21,12 @@ public class Col {
     public Col(String name, String type) {
         this.name = name;
         this.type = type;
+        this.objects = new ArrayList<>();
     }
 
     public boolean add(Object object) {
-        if (object.getClass().getName() != this.type) {
+
+        if (!object.getClass().getSimpleName().equals(this.type)) {
             return false;
         } else {
             objects.add(object);
@@ -33,6 +37,10 @@ public class Col {
 
     public void setObjects(ArrayList<Object> objects) {
         this.objects = objects;
+    }
+
+    public ArrayList<Object> getObjects() {
+        return objects;
     }
 
 

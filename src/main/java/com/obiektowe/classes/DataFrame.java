@@ -2,7 +2,6 @@ package com.obiektowe.classes;
 
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class DataFrame {
@@ -14,17 +13,18 @@ public class DataFrame {
             throw new Exception("Not equal lists size");
         }
 
-        for (int i = 0; i < colsNames.length; i++) {
-            this.cols.add(new Col(colsNames[i], colsTypes[i]));
-        }
+        this.cols = new ArrayList<Col>();
 
+        for (int i = 0; i < colsNames.length; i++) {
+            this.cols.add((new Col(colsNames[i], colsTypes[i])));
+        }
     }
 
-    private DataFrame(List cols) {
+    protected DataFrame(List cols) {
         this.cols = cols;
     }
 
-    private DataFrame(Col col) {
+    protected DataFrame(Col col) {
         cols.add(col);
     }
 
@@ -69,6 +69,37 @@ public class DataFrame {
 
     public DataFrame iloc(int from, int to) {
         return new DataFrame(this.cols.subList(from, to));
+    }
+
+
+    public void dropDatabase() {
+
+        System.out.println("=================================");
+
+        for (Col col : this.cols) {
+            System.out.print(col.getName() + " ");
+        }
+
+        System.out.println("");
+
+    }
+
+    public void insert(String colName, Object object) {
+        boolean inserted = false;
+
+        for (Col col : this.cols) {
+            if (col.getName().equals(colName)) {
+                inserted = col.add(object);
+                if (inserted) {
+                    System.out.println("Inserted " + object + " to " + colName);
+                }
+            }
+        }
+
+        if (!inserted) {
+            System.out.println("Insertion error");
+        }
+
     }
 
 }

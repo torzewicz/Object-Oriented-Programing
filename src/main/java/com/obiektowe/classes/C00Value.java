@@ -1,4 +1,4 @@
-package com.obiektowe.classes
+package com.obiektowe.classes;
 
 final public class C00Value {
 
