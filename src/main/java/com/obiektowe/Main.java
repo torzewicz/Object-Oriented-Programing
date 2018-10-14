@@ -1,6 +1,12 @@
 package com.obiektowe;
 
 import com.obiektowe.classes.DataFrame;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Main {
 
@@ -17,19 +23,16 @@ public class Main {
             e.printStackTrace();
         }
 
-        dataFrame.dropDatabase();
 
-        dataFrame.insert("Imie", "Pawel");
-        dataFrame.insert("Wiek", 17);
 
-        dataFrame.dropDatabase();
-
-        dataFrame.insert("Imie", "Typek");
-        dataFrame.insert("Wiek", 7);
+        List<Pair<String, Object>> objects = new ArrayList<>();
+        objects.addAll(Arrays.asList(new ImmutablePair<>("Imie", "Pawel"), new ImmutablePair<>("Nazwisko","Kowalski"), new ImmutablePair<>("Wiek",17)));
 
         dataFrame.dropDatabase();
 
+        dataFrame.insert(objects);
 
+        dataFrame.dropDatabase();
 
     }
 

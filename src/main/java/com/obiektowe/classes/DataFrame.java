@@ -1,6 +1,8 @@
 package com.obiektowe.classes;
 
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,22 +90,32 @@ public class DataFrame {
 
     }
 
-    public void insert(String colName, Object object) {
-        boolean inserted = false;
+    public void insert(List<Pair<String,Object>> objects) {
 
-        for (Col col : this.cols) {
-            if (col.getName().equals(colName)) {
-                inserted = col.add(object);
-                if (inserted) {
-                    System.out.println("Inserted " + object + " to " + colName);
+        if (objects.size() != this.size()) {
+            System.out.println("Insertion error");
+        } else {
+
+            boolean inserted = false;
+
+            for (Col col : this.cols) {
+
+                for(Pair pair : objects) {
+
+                    if (col.getName().equals(pair.getKey())) {
+                        inserted = col.add(pair.getValue());
+                        if (inserted) {
+                            System.out.println("Inserted " + pair.getValue() + " to " + pair.getKey());
+                        }
+                    }
                 }
             }
-        }
 
-        if (!inserted) {
-            System.out.println("Insertion error");
-        }
+            if (!inserted) {
+                System.out.println("Insertion error");
+            }
 
+        }
     }
 
 }
