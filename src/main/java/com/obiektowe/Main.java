@@ -4,6 +4,7 @@ import com.obiektowe.classes.DataFrame;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -33,6 +34,16 @@ public class Main {
         dataFrame.insert(objects);
 
         dataFrame.dropDatabase();
+
+        String[] types2 = {"Integer", "Integer", "Integer"};
+
+        DataFrame dataFrame1 = null;
+
+        try {
+            dataFrame1 = new DataFrame(new File("src/main/resources/data.csv"), types2, true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
