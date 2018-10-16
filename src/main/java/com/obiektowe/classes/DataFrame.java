@@ -80,14 +80,9 @@ public class DataFrame {
                     this.cols.get(j).add(data[j]);
                 }
 
-
-
-
-
                 System.out.println(strLine);
             }
         }
-
 
     }
 
@@ -136,8 +131,6 @@ public class DataFrame {
 
 
     public void dropDatabase() {
-
-        System.out.println("=================================");
 
         for (Col col : this.cols) {
             System.out.print(col.getName() + ": ");

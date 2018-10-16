@@ -14,7 +14,7 @@ public class Main {
     public static void main(String[] args) {
 
         String[] names = {"Imie", "Nazwisko", "Wiek"};
-        String[] types = {"String", "String", "Integer"};
+        String[] types = {"String", "String", "IntegerValue"};
 
         DataFrame dataFrame = null;
 
@@ -23,7 +23,6 @@ public class Main {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
 
 
         List<Pair<String, Object>> objects = new ArrayList<>();
@@ -35,7 +34,7 @@ public class Main {
 
         dataFrame.dropDatabase();
 
-        String[] types2 = {"Integer", "Integer", "Integer"};
+        String[] types2 = {"IntegerValue", "IntegerValue", "IntegerValue"};
 
         DataFrame dataFrame1 = null;
 
