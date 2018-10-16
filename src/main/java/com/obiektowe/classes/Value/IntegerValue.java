@@ -35,6 +35,7 @@ public class IntegerValue extends Value {
     public Value eq(Value value) throws Exception{ //equals
         if (value instanceof IntegerValue || value instanceof DoubleValue || value instanceof FloatValue) {
 //            return new IntegerValue(this.getInstance() - ((Integer)value.getInstance()));
+            return null;
         } else {
             throw new Exception("Types can not be compared");
         }
