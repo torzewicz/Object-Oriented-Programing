@@ -60,7 +60,7 @@ public class DataFrame {
                     if (!(ch == ',')) {
                         data[i] += ch;
                     } else {
-                        i ++;
+                        i++;
                     }
 
                 if (header) {
@@ -76,7 +76,7 @@ public class DataFrame {
                     continue;
                 }
 
-                for(int j = 0; j < data.length; j++) {
+                for (int j = 0; j < data.length; j++) {
                     this.cols.get(j).add(data[j]);
                 }
 
@@ -144,7 +144,7 @@ public class DataFrame {
 
     }
 
-    public void insert(List<Pair<String,Object>> objects) {
+    public void insert(List<Pair<String, Object>> objects) {
 
         if (objects.size() != this.size()) {
             System.out.println("Insertion error");
@@ -154,7 +154,7 @@ public class DataFrame {
 
             for (Col col : this.cols) {
 
-                for(Pair pair : objects) {
+                for (Pair pair : objects) {
 
                     if (col.getName().equals(pair.getKey())) {
                         inserted = col.add(pair.getValue());

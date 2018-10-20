@@ -1,5 +1,9 @@
 package com.obiektowe.classes;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +31,60 @@ public class SparseDataFrame extends DataFrame {
                 index++;
             }
             col.setObjects(temp);
+        }
+
+    }
+
+
+    public SparseDataFrame(File file, String[] colsTypes, boolean header, String... colNames) throws Exception {
+        super(file, colsTypes, header, colNames);
+        FileInputStream fileInputStream = new FileInputStream(file);
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream));
+
+        String strLine;
+        String[] names = null;
+        String[] data = null;
+        int i;
+        boolean initialized = false;
+
+
+        if (!header) {
+            if (colNames.length != colsTypes.length) {
+                throw new Exception("Not equal lists size");
+            }
+
+            names = colNames;
+        } else {
+            while ((strLine = bufferedReader.readLine()) != null) {
+
+                i = 0;
+
+                for (char ch : strLine.toCharArray())
+                    if (!(ch == ',')) {
+                        data[i] += ch;
+                    } else {
+                        i++;
+                    }
+
+                if (header) {
+                    names = data;
+                    header = false;
+                }
+
+                if (!initialized) {
+                    for (int a = 0; a == i; a++) {
+                        this.cols.add((new Col(names[i], colsTypes[i])));
+                    }
+                    initialized = true;
+                    continue;
+                }
+
+                for (int j = 0; j < data.length; j++) {
+                    this.cols.get(j).add(data[j]);
+                }
+
+                System.out.println(strLine);
+            }
         }
 
     }
