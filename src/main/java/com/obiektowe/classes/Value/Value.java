@@ -1,6 +1,6 @@
 package com.obiektowe.classes.Value;
 
-public abstract class Value {
+public abstract class Value implements Cloneable {
 
     @Override
     public abstract String toString();

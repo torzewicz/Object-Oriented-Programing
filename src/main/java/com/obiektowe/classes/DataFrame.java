@@ -14,6 +14,10 @@ public class DataFrame {
 
     protected List<Col> cols;
 
+    public List<Col> getCols() {
+        return cols;
+    }
+
     public DataFrame(String[] colsNames, String[] colsTypes) throws Exception {
         if (colsNames.length != colsTypes.length) {
             throw new Exception("Not equal lists size");
@@ -26,7 +30,7 @@ public class DataFrame {
         }
     }
 
-    protected DataFrame(List cols) {
+    public DataFrame(List cols) {
         this.cols = cols;
     }
 
@@ -40,7 +44,7 @@ public class DataFrame {
 
         String strLine;
         String[] names = null;
-        String[] data = null;
+        String[] data = new String[colsTypes.length];
         int i;
         boolean initialized = false;
 
@@ -56,9 +60,9 @@ public class DataFrame {
 
                 i = 0;
 
-                for (char ch : strLine.toCharArray())
-                    if (!(ch == ',')) {
-                        data[i] += ch;
+                for (Character ch : strLine.toString().toCharArray())
+                    if (!(ch.equals(','))) {
+                        data[i] += ch.toString();
                     } else {
                         i++;
                     }
@@ -76,11 +80,11 @@ public class DataFrame {
                     continue;
                 }
 
-                for (int j = 0; j < data.length; j++) {
-                    this.cols.get(j).add(data[j]);
-                }
+//                for (int j = 0; j < data.length; j++) {
+//                    this.cols.get(j).add(data[j]);
+//                }
 
-                System.out.println(strLine);
+//                System.out.println(strLine);
             }
         }
 
