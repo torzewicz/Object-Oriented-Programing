@@ -4,6 +4,8 @@ import com.obiektowe.classes.Col;
 import com.obiektowe.classes.DataFrame;
 import com.obiektowe.classes.Exceptions.WrongInsertionTypeException;
 import com.obiektowe.classes.Interfaces.Applyable;
+import com.obiektowe.classes.Value.*;
+import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -15,11 +17,31 @@ public class Maximum implements Applyable {
 
         List<Col> newCols = new ArrayList<>();
 
+
         for (Col col : dataFrame.getCols()) {
-            int max = col.getObjects().stream().map(i -> (Integer)i).max(Comparator.comparing(Integer::valueOf)).get();
-            Col colToAdd = new Col(col.getName(), col.getType());
-            colToAdd.add(max);
-            newCols.add(colToAdd);
+
+            if (col.getObjects().get(0) instanceof DoubleValue || col.getObjects().get(0) instanceof FloatValue || col.getObjects().get(0) instanceof IntegerValue) {
+
+                Double max = col.getObjects().stream().map(i -> ((Value) i).getInstance()).map(i -> (Double) i).max(Comparator.comparing(Double::valueOf)).get();
+                Col colToAdd = new Col(col.getName(), col.getType());
+                colToAdd.add(max);
+                newCols.add(colToAdd);
+            } else if (col.getObjects().get(0) instanceof BooleanValue) {
+                Object max = col.getObjects().stream().map(i -> ((Value) i).getInstance()).filter(i -> i.equals(true)).findFirst().get();
+                Col colToAdd = new Col(col.getName(), col.getType());
+                colToAdd.add(max);
+                newCols.add(colToAdd);
+            } else if (col.getObjects().get(0) instanceof StringValue) {
+                int max = col.getObjects().stream().map(i -> ((Value) i).getInstance()).map(i -> i.toString().length()).max(Comparator.comparing(Integer::valueOf)).get();
+                Col colToAdd = new Col(col.getName(), col.getType());
+                colToAdd.add(max);
+                newCols.add(colToAdd);
+            } else {
+                DateTime max = col.getObjects().stream().map(i -> ((Value) i).getInstance()).map(i -> (DateTime) i).max(Comparator.comparing(DateTime::toDate)).get();
+                Col colToAdd = new Col(col.getName(), col.getType());
+                colToAdd.add(max);
+                newCols.add(colToAdd);
+            }
         }
 
         return new DataFrame(newCols);

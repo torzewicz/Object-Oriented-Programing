@@ -9,6 +9,13 @@ import com.obiektowe.classes.SparseDataFrame;
 import com.obiektowe.classes.Value.IntegerValue;
 import com.obiektowe.classes.Value.StringValue;
 import com.obiektowe.classes.utils.DataFrameUtils;
+import javafx.application.Application;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
+import javafx.stage.Stage;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -21,7 +28,7 @@ import java.util.stream.Collectors;
 import static com.obiektowe.classes.utils.DataFrameUtils.dropDatabase;
 import static com.obiektowe.classes.utils.DataFrameUtils.insert;
 
-public class Main {
+public class Main extends Application {
 
     public static void main(String[] args) {
 
@@ -117,6 +124,34 @@ public class Main {
 
 //        dropDatabase(sparseDataFrame, 10);
 
+        launch(args);
+
     }
 
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+//        BorderPane borderPane = new BorderPane();
+//        scene.getStylesheets().add(getClass().toString());
+
+
+        Line line = new Line();
+
+
+        line.setStartX(100.0);
+        line.setStartY(150.0);
+
+        line.setEndX(500.0);
+        line.setEndY(150.0);
+
+        Group group = new Group(line);
+
+        Scene scene = new Scene(group, 800, 800);
+        scene.setFill(Color.BLUE);
+
+
+        primaryStage.setTitle("DataFrame");
+        primaryStage.setScene(scene);
+        primaryStage.show();
+
+    }
 }
