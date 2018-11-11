@@ -2,6 +2,9 @@ package com.obiektowe.classes.Value;
 
 public class FloatValue extends Value {
 
+    public FloatValue() {
+    }
+
     private Float value;
 
     public FloatValue(Float value) {
@@ -98,7 +101,11 @@ public class FloatValue extends Value {
         return value;
     }
 
-    public void setValue(Float value) {
-        this.value = value;
+    public void setValue(Object value) {
+        this.value = new Float(value.toString());
     }
+
+//    public void setValue(String value) {
+//        this.value = new Float(value);
+//    }
 }

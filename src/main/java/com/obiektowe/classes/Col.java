@@ -1,5 +1,7 @@
 package com.obiektowe.classes;
 
+import com.obiektowe.classes.Exceptions.WrongInsertionTypeException;
+
 import java.util.ArrayList;
 
 public class Col {
@@ -24,15 +26,18 @@ public class Col {
         this.objects = new ArrayList<>();
     }
 
-    public boolean add(Object object) {
+    public boolean add(Object object) throws WrongInsertionTypeException {
 
-        if (!object.getClass().getSimpleName().equals(this.type)) {
-            return false;
+        boolean inserted = false;
+
+        if (!object.getClass().getSimpleName().equals(getType())) {
+            throw new WrongInsertionTypeException("Is: " + object.getClass().getSimpleName() + ", should be: " + this.type);
         } else {
             objects.add(object);
-            return true;
+            inserted = true;
         }
 
+        return inserted;
     }
 
     public void setObjects(ArrayList<Object> objects) {

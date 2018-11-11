@@ -98,8 +98,8 @@ public class IntegerValue extends Value {
         return value;
     }
 
-    public void setValue(int value) {
-        this.value = value;
+    public void setValue(Object value) {
+        this.value = (Integer)value;
     }
 
 

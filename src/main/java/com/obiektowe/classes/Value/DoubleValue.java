@@ -98,7 +98,9 @@ public class DoubleValue extends Value {
         return value;
     }
 
-    public void setValue(Double value) {
-        this.value = value;
+    @Override
+    public void setValue(Object value) {
+        this.value = (Double)value;
     }
+
 }

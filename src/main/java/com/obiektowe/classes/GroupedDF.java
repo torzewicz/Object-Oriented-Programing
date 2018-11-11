@@ -1,6 +1,8 @@
 package com.obiektowe.classes;
 
-import com.obiektowe.classes.DataFrame;
+import com.obiektowe.classes.Exceptions.NotEqualListsSizeException;
+import com.obiektowe.classes.Exceptions.WrongInsertionTypeException;
+import com.obiektowe.classes.Interfaces.Applyable;
 import com.obiektowe.classes.Interfaces.Groupby;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -12,11 +14,9 @@ public class GroupedDF implements Groupby {
 
     private List<DataFrame> dataFrames;
 
-
-    // not sure if this even works - not time to make sure
-    public GroupedDF(String[] colNames, DataFrame dataFrame) throws Exception {
+    public GroupedDF(String[] colNames, DataFrame dataFrame) throws NotEqualListsSizeException, WrongInsertionTypeException {
         dataFrames = new LinkedList<>();
-        List<Col> allCols = dataFrame.cols;
+        List<Col> allCols = dataFrame.getCols();
         List<Col> sortByCols = new ArrayList<>();
 
         for (String s : colNames) {
@@ -24,47 +24,127 @@ public class GroupedDF implements Groupby {
         }
 
         for (Col sortByCol : sortByCols) {
-            List<Object> groupByObjects = sortByCol.getObjects().stream().distinct().collect(Collectors.toList()); // Then group by these objects
-            int numberOfDF = (int)sortByCol.getObjects().stream().distinct().count(); // How many DF there will be
 
-            for (int i = 0; i < numberOfDF; i++) {
+            List<Object> groupByObjects = new ArrayList<>();
+
+            for (Object object : sortByCol.getObjects()) { //group by these objects
+                boolean toInsert = true;
+                for (Object o : groupByObjects) {
+                    if (o.toString().equals(object.toString())) {
+                        toInsert = false;
+                    }
+                }
+                if (toInsert) {
+                    groupByObjects.add(object);
+                }
+
+            }
+
+            System.out.println(groupByObjects);
+
+            int numberOfDF = (int) sortByCol.getObjects().stream().map(i -> i.toString()).distinct().count(); // How many DF there will be
+
+            for (int i = 0; i < numberOfDF; i++) { //wow
                 dataFrames.add(new DataFrame(allCols.stream().map(a -> a.getName()).collect(Collectors.toList()).toArray(new String[allCols.size()]), allCols.stream().map(a -> a.getType()).collect(Collectors.toList()).toArray(new String[allCols.size()])));
-            } // So create so many DF's
+            } // create so many DF's
 
             List<Pair<Object, Integer>> listOfObjectsAndItsIndex = new ArrayList<>(); // Want to know which index relates to wanted object
 
-            sortByCol.getObjects().stream().forEach(i -> listOfObjectsAndItsIndex.add(new ImmutablePair<>(i, sortByCol.getObjects().indexOf(i)))); // Add index and its object to list
+            for (int i = 0; i < sortByCol.getObjects().size(); i++) {
+                listOfObjectsAndItsIndex.add(new ImmutablePair<>(sortByCol.getObjects().get(i), i)); // Add index and its object to list
+            }
 
             for (Object object : groupByObjects) {
 
-                List<Pair<String,Object>> insertionObjects= new ArrayList<>();
+                int howManyObjects = (int) dataFrame.get(sortByCol.getName()).getObjects().stream().filter(i -> i.toString().equals(object.toString())).count();
+
                 List<Integer> indexes = new ArrayList<>();
+                List<Pair<String, Object>> insertionObjects = new ArrayList<>();
 
                 for (Pair pair : listOfObjectsAndItsIndex) {
 
-                    if (pair.getKey().equals(object)) {
+                    if (pair.getKey().toString().equals(object.toString())) {
                         insertionObjects.add(new ImmutablePair<>(sortByCol.getName(), object));
                         indexes.add((Integer) pair.getValue());
                     }
 
                 }
 
-                dataFrames.get(groupByObjects.indexOf(object)).insert(insertionObjects);
+                System.out.println(insertionObjects + " " + indexes);
 
-                for (Col col : dataFrames.get(groupByObjects.indexOf(object)).cols) {
+                boolean inserted = false;
+
+                for (Col col : dataFrames.get(groupByObjects.stream().map(Object::toString).collect(Collectors.toList()).indexOf(object.toString())).getCols()) {
+                    for (Pair pair : insertionObjects) {
+                        if (col.getName().equals(pair.getKey())) {
+                            inserted = col.add(pair.getValue());
+                        }
+                    }
+                }
+
+                if (!inserted) {
+                    System.out.println("Insertion error");
+                }
+
+
+                for (Col col : dataFrames.get(groupByObjects.stream().map(Object::toString).collect(Collectors.toList()).indexOf(object.toString())).getCols()) {
 
                     if (!col.getName().equals(sortByCol.getName())) {
 
-                        int wantedIndex = listOfObjectsAndItsIndex.stream().filter(i -> i.getKey().equals(object)).map(i -> i.getValue()).findFirst().get();
-                        col.add(dataFrame.get(col.getName()).getObjects().get(wantedIndex));
+                        List<Integer> wantedIndex = listOfObjectsAndItsIndex.stream().filter(i -> i.getKey().toString().equals(object.toString())).map(Pair::getValue).collect(Collectors.toList());
+                        for (Integer integer : wantedIndex) {
+                            col.add(dataFrame.get(col.getName()).getObjects().get(integer));
+                        }
 
                     }
 
                 }
-
             }
 
         }
+    }
+
+    @Override
+    public DataFrame apply(Applyable applyable) {
+        return null;
+    }
+
+    @Override
+    public DataFrame max() {
+        return null;
+    }
+
+    @Override
+    public DataFrame min() {
+        return null;
+    }
+
+    @Override
+    public DataFrame mean() {
+        return null;
+    }
+
+    @Override
+    public DataFrame std() {
+        return null;
+    }
+
+    @Override
+    public DataFrame sum() {
+        return null;
+    }
+
+    @Override
+    public DataFrame var() {
+        return null;
+    }
+
+    public List<DataFrame> getDataFrames() {
+        return dataFrames;
+    }
+
+    public void setDataFrames(List<DataFrame> dataFrames) {
+        this.dataFrames = dataFrames;
     }
 
 }

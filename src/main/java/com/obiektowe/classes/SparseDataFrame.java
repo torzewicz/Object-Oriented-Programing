@@ -1,9 +1,11 @@
 package com.obiektowe.classes;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
+import com.obiektowe.classes.Exceptions.NotEqualListsSizeException;
+import com.obiektowe.classes.Exceptions.WrongInsertionTypeException;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,78 +15,82 @@ public class SparseDataFrame extends DataFrame {
 
     private String valueToHide;
 
-    public SparseDataFrame(String[] colsNames, String[] colsTypes, String valueToHide) throws Exception {
+    public SparseDataFrame(String[] colsNames, String[] colsTypes, String valueToHide) throws NotEqualListsSizeException {
         super(colsNames, colsTypes);
         this.valueToHide = valueToHide;
     }
 
-    public SparseDataFrame(DataFrame dataFrame, String valueToHide) {
-        super(dataFrame.cols);
-        this.cols = dataFrame.cols;
-        for (Col col : this.cols) {
-            ArrayList<Object> temp = null;
+    public SparseDataFrame(DataFrame dataFrame, String valueToHide) throws WrongInsertionTypeException {
+        super(dataFrame.getCols());
+        this.cols = new ArrayList<>();
+        boolean inserted = false;
+
+        for (Col col : dataFrame.getCols()) {
+            this.cols.add(new Col(col.getName(), "C00Value"));
+        }
+
+        List<Pair<String, Object>> whatToAdd = new ArrayList<>();
+
+        for (Col col : dataFrame.getCols()) {
             int index = 0;
             for (Object object : col.getObjects()) {
                 if (!(object.equals(valueToHide))) {
-                    temp.add(new C00Value(index, object));
+                    whatToAdd.add(new ImmutablePair<>(col.getName(), new C00Value(index, object)));
                 }
                 index++;
             }
-            col.setObjects(temp);
         }
+
+        for (Col col : this.cols) {
+            for (Pair pair : whatToAdd) {
+                if (col.getName().equals(pair.getKey())) {
+                    inserted = col.add(pair.getValue());
+                }
+            }
+        }
+
+        if (!inserted) {
+            System.out.println("Insertion error");
+        }
+
 
     }
 
+    public SparseDataFrame(String pathToFile, String[] colsTypes, boolean header, String valueToHide, String... colNames) throws NotEqualListsSizeException, IOException, WrongInsertionTypeException, InstantiationException, IllegalAccessException {
+        super(pathToFile, colsTypes, header, colNames);
+        boolean inserted = false;
 
-    public SparseDataFrame(File file, String[] colsTypes, boolean header, String... colNames) throws Exception {
-        super(file, colsTypes, header, colNames);
-        FileInputStream fileInputStream = new FileInputStream(file);
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream));
+        // to be changed
+        DataFrame dataFrame = new DataFrame(pathToFile, colsTypes, header, colNames);
 
-        String strLine;
-        String[] names = null;
-        String[] data = null;
-        int i;
-        boolean initialized = false;
+        this.cols = new ArrayList<>();
 
+        for (Col col : dataFrame.getCols()) {
+            this.cols.add(new Col(col.getName(), "C00Value"));
+        }
 
-        if (!header) {
-            if (colNames.length != colsTypes.length) {
-                throw new Exception("Not equal lists size");
+        List<Pair<String, Object>> whatToAdd = new ArrayList<>();
+
+        for (Col col : dataFrame.getCols()) {
+            int index = 0;
+            for (Object object : col.getObjects()) {
+                if (!(object.toString().equals(valueToHide))) {
+                    whatToAdd.add(new ImmutablePair<>(col.getName(), new C00Value(index, object)));
+                }
+                index++;
             }
+        }
 
-            names = colNames;
-        } else {
-            while ((strLine = bufferedReader.readLine()) != null) {
-
-                i = 0;
-
-                for (char ch : strLine.toCharArray())
-                    if (!(ch == ',')) {
-                        data[i] += ch;
-                    } else {
-                        i++;
-                    }
-
-                if (header) {
-                    names = data;
-                    header = false;
+        for (Col col : this.cols) {
+            for (Pair pair : whatToAdd) {
+                if (col.getName().equals(pair.getKey())) {
+                    inserted = col.add(pair.getValue());
                 }
-
-                if (!initialized) {
-                    for (int a = 0; a == i; a++) {
-                        this.cols.add((new Col(names[i], colsTypes[i])));
-                    }
-                    initialized = true;
-                    continue;
-                }
-
-                for (int j = 0; j < data.length; j++) {
-                    this.cols.get(j).add(data[j]);
-                }
-
-                System.out.println(strLine);
             }
+        }
+
+        if (!inserted) {
+            System.out.println("Insertion error");
         }
 
     }
@@ -94,10 +100,10 @@ public class SparseDataFrame extends DataFrame {
         return true;
     }
 
-    public static DataFrame toDense(SparseDataFrame sparseDataFrame) throws Exception {
+    public static DataFrame toDense(SparseDataFrame sparseDataFrame) throws NotEqualListsSizeException {
         List<Col> cols = sparseDataFrame.cols;
-        List<String> colNames = new ArrayList<String>();
-        List<String> colTypes = new ArrayList<String>();
+        List<String> colNames = new ArrayList<>();
+        List<String> colTypes = new ArrayList<>();
 
         for (Col col : cols) {
             colNames.add(col.getName());
@@ -115,6 +121,11 @@ public class SparseDataFrame extends DataFrame {
 
         return null;
 
+    }
+
+    @Override
+    public List<Col> getCols() {
+        return cols;
     }
 
 

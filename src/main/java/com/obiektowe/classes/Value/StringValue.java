@@ -1,29 +1,21 @@
-package com.obiektowe.classes;
+package com.obiektowe.classes.Value;
 
-import com.obiektowe.classes.Value.Value;
+public class StringValue extends Value {
 
-final public class C00Value extends Value {
+    private String value;
 
-    public int getIndex() {
-        return index;
-    }
-
-    final private int index;
-
-    final private Object value;
-    public C00Value(int index, Object value) {
-        this.index = index;
+    public StringValue(String value) {
         this.value = value;
     }
 
     @Override
     public String toString() {
-        return "Object: " + this.value.toString() + ", Index: " + this.index;
+        return value;
     }
 
     @Override
-    public Value add(Value value) throws Exception {
-        return null;
+    public Value add(Value value) {
+        return new StringValue(this.getInstance() + value.getInstance().toString());
     }
 
     @Override
@@ -33,7 +25,7 @@ final public class C00Value extends Value {
 
     @Override
     public Value eq(Value value) throws Exception {
-        return null;
+        return this.getInstance().equals(value.getInstance().toString()) ? new BooleanValue(true) : new BooleanValue(false);
     }
 
     @Override
@@ -62,21 +54,22 @@ final public class C00Value extends Value {
     }
 
     @Override
-    public C00Value create(String s) {
-        return null;
+    public StringValue create(String s) {
+        return new StringValue(s);
     }
 
     @Override
-    public C00Value getInstance() {
-        return null;
+    public String getInstance() {
+        return this.value;
     }
 
+    @Override
     public Object getValue() {
         return value;
     }
 
     @Override
     public void setValue(Object value) {
-
+        this.value = (String)value;
     }
 }

@@ -1,6 +1,6 @@
 package com.obiektowe.classes.Value;
 
-public abstract class Value implements Cloneable {
+public abstract class Value<T> implements Cloneable {
 
     @Override
     public abstract String toString();
@@ -23,8 +23,12 @@ public abstract class Value implements Cloneable {
     @Override
     public abstract int hashCode();
 
-    public abstract <T> T create(String s);
+    public abstract T create(String s);
 
-    public abstract <T> T getInstance();
+    public abstract T getInstance();
+
+    public abstract T getValue();
+
+    public abstract void setValue(T value);
 
 }

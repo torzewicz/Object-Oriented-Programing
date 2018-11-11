@@ -2,6 +2,7 @@ package com.obiektowe.classes.Applyable;
 
 import com.obiektowe.classes.Col;
 import com.obiektowe.classes.DataFrame;
+import com.obiektowe.classes.Exceptions.WrongInsertionTypeException;
 import com.obiektowe.classes.Interfaces.Applyable;
 
 import java.util.ArrayList;
@@ -10,7 +11,7 @@ import java.util.List;
 
 public class Mean implements Applyable {
     @Override
-    public DataFrame apply(DataFrame dataFrame) {
+    public DataFrame apply(DataFrame dataFrame) throws WrongInsertionTypeException {
         {
 
             List<Col> newCols = new ArrayList<>();
