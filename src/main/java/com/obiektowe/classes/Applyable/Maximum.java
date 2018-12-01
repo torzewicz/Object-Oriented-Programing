@@ -21,25 +21,24 @@ public class Maximum implements Applyable {
         for (Col col : dataFrame.getCols()) {
 
             if (col.getObjects().get(0) instanceof DoubleValue || col.getObjects().get(0) instanceof FloatValue || col.getObjects().get(0) instanceof IntegerValue) {
-
                 Double max = col.getObjects().stream().map(i -> ((Value) i).getInstance()).map(i -> (Double) i).max(Comparator.comparing(Double::valueOf)).get();
-                Col colToAdd = new Col(col.getName(), col.getType());
-                colToAdd.add(max);
+                Col colToAdd = new Col(col.getName(), "DoubleValue");
+                colToAdd.add(new DoubleValue(max));
                 newCols.add(colToAdd);
             } else if (col.getObjects().get(0) instanceof BooleanValue) {
-                Object max = col.getObjects().stream().map(i -> ((Value) i).getInstance()).filter(i -> i.equals(true)).findFirst().get();
+                Boolean max = (Boolean) col.getObjects().stream().map(i -> ((Value) i).getInstance()).filter(i -> i.equals(true)).findFirst().get();
                 Col colToAdd = new Col(col.getName(), col.getType());
-                colToAdd.add(max);
+                colToAdd.add(new BooleanValue(max));
                 newCols.add(colToAdd);
             } else if (col.getObjects().get(0) instanceof StringValue) {
-                int max = col.getObjects().stream().map(i -> ((Value) i).getInstance()).map(i -> i.toString().length()).max(Comparator.comparing(Integer::valueOf)).get();
+                Integer max = col.getObjects().stream().map(i -> ((Value) i).getInstance()).map(i -> i.toString().length()).max(Comparator.comparing(Integer::valueOf)).get();
                 Col colToAdd = new Col(col.getName(), col.getType());
-                colToAdd.add(max);
+                colToAdd.add(new StringValue(max.toString()));
                 newCols.add(colToAdd);
             } else {
                 DateTime max = col.getObjects().stream().map(i -> ((Value) i).getInstance()).map(i -> (DateTime) i).max(Comparator.comparing(DateTime::toDate)).get();
                 Col colToAdd = new Col(col.getName(), col.getType());
-                colToAdd.add(max);
+                colToAdd.add(new DateTimeValue(max));
                 newCols.add(colToAdd);
             }
         }

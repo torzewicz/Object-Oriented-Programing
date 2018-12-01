@@ -1,5 +1,7 @@
 package com.obiektowe.classes.Value;
 
+import com.obiektowe.classes.Exceptions.IncompatibleValueTypes;
+
 public class DoubleValue extends Value {
 
     private Double value;
@@ -14,25 +16,25 @@ public class DoubleValue extends Value {
     }
 
     @Override
-    public Value add(Value value) throws Exception {
+    public Value add(Value value) throws IncompatibleValueTypes {
         if (value instanceof IntegerValue || value instanceof DoubleValue || value instanceof FloatValue) {
             return new DoubleValue(this.getInstance() + ((Double) value.getInstance()));
         } else {
-            throw new Exception("Types can not be added");
+            throw new IncompatibleValueTypes("Types can not be added");
         }
     }
 
     @Override
-    public Value sub(Value value) throws Exception {
+    public Value sub(Value value) throws IncompatibleValueTypes {
         if (value instanceof IntegerValue || value instanceof DoubleValue || value instanceof FloatValue) {
             return new DoubleValue(this.getInstance() - ((Double) value.getInstance()));
         } else {
-            throw new Exception("Types can not be subtracted");
+            throw new IncompatibleValueTypes("Types can not be subtracted");
         }
     }
 
     @Override
-    public Value eq(Value value) throws Exception { //equals
+    public Value eq(Value value) throws IncompatibleValueTypes { //equals
         if (value instanceof IntegerValue || value instanceof DoubleValue || value instanceof FloatValue) {
             if (this.getInstance().equals((Double) value.getInstance())) {
                 return new BooleanValue(true);
@@ -40,7 +42,7 @@ public class DoubleValue extends Value {
                 return new BooleanValue(false);
             }
         } else {
-            throw new Exception("Types can not be compared");
+            throw new IncompatibleValueTypes("Types can not be compared");
         }
     }
 
@@ -55,7 +57,7 @@ public class DoubleValue extends Value {
     }
 
     @Override
-    public Value neq(Value value) throws Exception { //not equal
+    public Value neq(Value value) throws IncompatibleValueTypes { //not equal
         if (value instanceof IntegerValue || value instanceof DoubleValue || value instanceof FloatValue) {
             if (this.getInstance().equals((Double) value.getInstance())) {
                 return new BooleanValue(false);
@@ -63,7 +65,7 @@ public class DoubleValue extends Value {
                 return new BooleanValue(true);
             }
         } else {
-            throw new Exception("Types can not be compared");
+            throw new IncompatibleValueTypes("Types can not be compared");
         }
     }
 
@@ -81,7 +83,7 @@ public class DoubleValue extends Value {
 
     @Override
     public int hashCode() {
-        return 0;
+        return this.getInstance().hashCode();
     }
 
     @Override

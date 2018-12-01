@@ -27,8 +27,9 @@ import java.util.stream.Collectors;
 
 import static com.obiektowe.classes.utils.DataFrameUtils.dropDatabase;
 import static com.obiektowe.classes.utils.DataFrameUtils.insert;
+import static javafx.application.Application.launch;
 
-public class Main extends Application {
+public class Main {
 
     public static void main(String[] args) {
 
@@ -45,10 +46,10 @@ public class Main extends Application {
 
 
         List<Pair<String, Object>> objects = new ArrayList<>();
-        objects.addAll(Arrays.asList(new ImmutablePair<>("Imie", new StringValue("Pawel")), new ImmutablePair<>("Nazwisko",new StringValue("Kowalski")), new ImmutablePair<>("Wiek",new IntegerValue(17))));
-        objects.addAll(Arrays.asList(new ImmutablePair<>("Imie", new StringValue("Marek")), new ImmutablePair<>("Nazwisko",new StringValue("Nowak")), new ImmutablePair<>("Wiek",new IntegerValue(43))));
-        objects.addAll(Arrays.asList(new ImmutablePair<>("Imie", new StringValue("Dominik")), new ImmutablePair<>("Nazwisko",new StringValue("Smith")), new ImmutablePair<>("Wiek",new IntegerValue(26))));
-        objects.addAll(Arrays.asList(new ImmutablePair<>("Imie", new StringValue("Pawel")), new ImmutablePair<>("Nazwisko",new StringValue("Abc")), new ImmutablePair<>("Wiek",new IntegerValue(65))));
+        objects.addAll(Arrays.asList(new ImmutablePair<>("Imie", new StringValue("Pawel")), new ImmutablePair<>("Nazwisko", new StringValue("Kowalski")), new ImmutablePair<>("Wiek", new IntegerValue(17))));
+        objects.addAll(Arrays.asList(new ImmutablePair<>("Imie", new StringValue("Marek")), new ImmutablePair<>("Nazwisko", new StringValue("Nowak")), new ImmutablePair<>("Wiek", new IntegerValue(43))));
+        objects.addAll(Arrays.asList(new ImmutablePair<>("Imie", new StringValue("Dominik")), new ImmutablePair<>("Nazwisko", new StringValue("Smith")), new ImmutablePair<>("Wiek", new IntegerValue(26))));
+        objects.addAll(Arrays.asList(new ImmutablePair<>("Imie", new StringValue("Pawel")), new ImmutablePair<>("Nazwisko", new StringValue("Abc")), new ImmutablePair<>("Wiek", new IntegerValue(65))));
 
 //        dataFrame.dropDatabase();
 
@@ -102,7 +103,7 @@ public class Main extends Application {
 //        DataFrameUtils.dropDatabase(dataFrame1,10);
 
 
-        SparseDataFrame sparseDataFrame = null;
+//        SparseDataFrame sparseDataFrame = null;
 //        try {
 //            sparseDataFrame = new SparseDataFrame(dataFrame, "dupa");
 //        } catch (WrongInsertionTypeException e) {
@@ -123,35 +124,6 @@ public class Main extends Application {
 //        sparseDataFrame.dropDatabase(10);
 
 //        dropDatabase(sparseDataFrame, 10);
-
-        launch(args);
-
-    }
-
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-//        BorderPane borderPane = new BorderPane();
-//        scene.getStylesheets().add(getClass().toString());
-
-
-        Line line = new Line();
-
-
-        line.setStartX(100.0);
-        line.setStartY(150.0);
-
-        line.setEndX(500.0);
-        line.setEndY(150.0);
-
-        Group group = new Group(line);
-
-        Scene scene = new Scene(group, 800, 800);
-        scene.setFill(Color.BLUE);
-
-
-        primaryStage.setTitle("DataFrame");
-        primaryStage.setScene(scene);
-        primaryStage.show();
 
     }
 }

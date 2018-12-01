@@ -1,5 +1,7 @@
 package com.obiektowe.classes.Value;
 
+import com.obiektowe.classes.Exceptions.IncompatibleValueTypes;
+
 public class BooleanValue extends Value {
 
     private Boolean value;
@@ -14,38 +16,38 @@ public class BooleanValue extends Value {
     }
 
     @Override
-    public Value add(Value value) throws Exception {
+    public Value add(Value value) throws IncompatibleValueTypes {
         if (value instanceof BooleanValue) {
             if (this.getInstance().equals(true) && ((BooleanValue) value).getInstance().equals(false) || this.getInstance().equals(false) && ((BooleanValue) value).getInstance().equals(true)) {
                 return new BooleanValue(true);
             } else return new BooleanValue(false);
         } else {
-            throw new Exception("Types can not be added");
+            throw new IncompatibleValueTypes("Types can not be added");
         }
     }
 
     @Override
-    public Value sub(Value value) throws Exception {
+    public Value sub(Value value) throws IncompatibleValueTypes {
         if (value instanceof BooleanValue) {
             if (this.getInstance().equals(true) && ((BooleanValue) value).getInstance().equals(true) || this.getInstance().equals(false) && ((BooleanValue) value).getInstance().equals(false)) {
                 return new BooleanValue(false);
             } else return new BooleanValue(true);
         } else {
-            throw new Exception("Types can not be subtracted");
+            throw new IncompatibleValueTypes("Types can not be subtracted");
         }
     }
 
     @Override
-    public Value eq(Value value) throws Exception {
+    public Value eq(Value value) throws IncompatibleValueTypes {
         if (value instanceof BooleanValue) {
             return this.getInstance().equals(value.getInstance()) ? new BooleanValue(true) : new BooleanValue(false);
         } else {
-            throw new Exception("Types can not be compared");
+            throw new IncompatibleValueTypes("Types can not be compared");
         }
     }
 
     @Override
-    public Value lte(Value value) throws Exception {
+    public Value lte(Value value) {
         if (this.getInstance().equals(false) || ((BooleanValue) value).getInstance().equals(false)) {
             return new BooleanValue(false);
         }
@@ -53,7 +55,7 @@ public class BooleanValue extends Value {
     }
 
     @Override
-    public Value gte(Value value) throws Exception {
+    public Value gte(Value value) {
         if (this.getInstance().equals(true) || ((BooleanValue) value).getInstance().equals(true)) {
             return new BooleanValue(true);
         }
@@ -61,23 +63,23 @@ public class BooleanValue extends Value {
     }
 
     @Override
-    public Value neq(Value value) throws Exception {
+    public Value neq(Value value) {
         return this.getInstance().equals(value.getInstance()) ? new BooleanValue(false) : new BooleanValue(true);
     }
 
     @Override
     public boolean equals(Object object) {
-        return this.getInstance().equals(object) ? true : false;
+        return this.getInstance().equals(object);
     }
 
     @Override
     public int hashCode() {
-        return 0;
+        return this.getInstance().hashCode();
     }
 
     @Override
     public BooleanValue create(String s) {
-        return new BooleanValue(new Boolean(s));
+        return new BooleanValue(Boolean.valueOf(s));
     }
 
     @Override

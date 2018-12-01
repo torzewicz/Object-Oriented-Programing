@@ -1,5 +1,6 @@
 package com.obiektowe.classes.Value;
 
+import com.obiektowe.classes.Exceptions.IncompatibleValueTypes;
 import org.joda.time.DateTime;
 
 public class DateTimeValue extends Value {
@@ -16,62 +17,62 @@ public class DateTimeValue extends Value {
     }
 
     @Override
-    public Value add(Value value) throws Exception {
+    public Value add(Value value) throws IncompatibleValueTypes {
         if (value instanceof DateTimeValue) {
             DateTime dateTime = ((DateTimeValue) value).getInstance();
             return new DateTimeValue(this.value.plusYears(dateTime.getYear()).plusDays(dateTime.getDayOfMonth()).plusMonths(dateTime.getMonthOfYear()));
         } else {
-            throw new Exception("Types can not be added");
+            throw new IncompatibleValueTypes("Types can not be added");
         }
     }
 
     @Override
-    public Value sub(Value value) throws Exception {
+    public Value sub(Value value) throws IncompatibleValueTypes {
         if (value instanceof DateTimeValue) {
             DateTime dateTime = ((DateTimeValue) value).getInstance();
             return new DateTimeValue(this.value.minusYears(dateTime.getYear()).minusDays(dateTime.getDayOfMonth()).minusMonths(dateTime.getMonthOfYear()));
         } else {
-            throw new Exception("Types can not be subtracted");
+            throw new IncompatibleValueTypes("Types can not be subtracted");
         }
     }
 
     @Override
-    public Value eq(Value value) throws Exception {
+    public Value eq(Value value) throws IncompatibleValueTypes {
         if (value instanceof DateTimeValue) {
             if (this.value.equals(value.getInstance())) {
                 return new BooleanValue(true);
             } else return new BooleanValue(false);
         } else {
-            throw new Exception("Types can not be compared");
+            throw new IncompatibleValueTypes("Types can not be compared");
         }
     }
 
     @Override
-    public Value lte(Value value) throws Exception {
+    public Value lte(Value value) throws IncompatibleValueTypes {
         if (value instanceof DateTimeValue) {
             return this.value.isAfter(((DateTimeValue) value).getInstance()) ? new DateTimeValue(((DateTimeValue) value).getInstance()) : new DateTimeValue(this.value);
         } else {
-            throw new Exception("Types can not be compared");
+            throw new IncompatibleValueTypes("Types can not be compared");
         }
     }
 
     @Override
-    public Value gte(Value value) throws Exception {
+    public Value gte(Value value) throws IncompatibleValueTypes {
         if (value instanceof DateTimeValue) {
             return this.value.isBefore(((DateTimeValue) value).getInstance()) ? new DateTimeValue(((DateTimeValue) value).getInstance()) : new DateTimeValue(this.value);
         } else {
-            throw new Exception("Types can not be compared");
+            throw new IncompatibleValueTypes("Types can not be compared");
         }
     }
 
     @Override
-    public Value neq(Value value) throws Exception {
+    public Value neq(Value value) throws IncompatibleValueTypes {
         if (value instanceof DateTimeValue) {
             if (this.value.equals(value.getInstance())) {
                 return new BooleanValue(false);
             } else return new BooleanValue(true);
         } else {
-            throw new Exception("Types can not be compared");
+            throw new IncompatibleValueTypes("Types can not be compared");
         }
     }
 
@@ -82,7 +83,7 @@ public class DateTimeValue extends Value {
 
     @Override
     public int hashCode() {
-        return 0;
+        return this.getInstance().hashCode();
     }
 
     @Override
