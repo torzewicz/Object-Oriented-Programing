@@ -4,6 +4,9 @@ import com.obiektowe.classes.Exceptions.IncompatibleValueTypes;
 
 public class BooleanValue extends Value {
 
+    public BooleanValue() {
+    }
+
     private Boolean value;
 
     public BooleanValue(Boolean value) {

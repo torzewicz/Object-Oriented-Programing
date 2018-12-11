@@ -16,7 +16,6 @@ public class ConfirmBox {
 
     public static boolean display(String title, String message) {
         Stage window = new Stage();
-//        window.initStyle(StageStyle.UNDECORATED);
         window.initStyle(StageStyle.UTILITY);
 
         window.initModality(Modality.APPLICATION_MODAL);
@@ -41,7 +40,6 @@ public class ConfirmBox {
             answer = false;
             window.close();
         });
-
 
 
         VBox layout = new VBox(15);

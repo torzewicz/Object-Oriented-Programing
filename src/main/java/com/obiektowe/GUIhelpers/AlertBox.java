@@ -15,7 +15,6 @@ public class AlertBox {
 
     public static void display(String title, String message) {
         Stage window = new Stage();
-//        window.initStyle(StageStyle.UTILITY);new
         window.initStyle(StageStyle.UTILITY);
         window.initModality(Modality.APPLICATION_MODAL);
         window.setTitle(title);

@@ -4,6 +4,9 @@ import com.obiektowe.classes.Exceptions.IncompatibleValueTypes;
 
 public class IntegerValue extends Value {
 
+    public IntegerValue() {
+    }
+
     private Integer value;
 
     public IntegerValue(Integer value) {

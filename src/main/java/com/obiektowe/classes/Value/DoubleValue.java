@@ -4,6 +4,9 @@ import com.obiektowe.classes.Exceptions.IncompatibleValueTypes;
 
 public class DoubleValue extends Value {
 
+    public DoubleValue() {
+    }
+
     private Double value;
 
     public DoubleValue(Double value) {

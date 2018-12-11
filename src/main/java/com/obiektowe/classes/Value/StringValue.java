@@ -4,6 +4,9 @@ import com.obiektowe.classes.Exceptions.IncompatibleValueTypes;
 
 public class StringValue extends Value {
 
+    public StringValue() {
+    }
+
     private String value;
 
     public StringValue(String value) {

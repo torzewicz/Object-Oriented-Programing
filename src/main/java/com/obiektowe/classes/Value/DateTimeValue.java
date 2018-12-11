@@ -5,6 +5,9 @@ import org.joda.time.DateTime;
 
 public class DateTimeValue extends Value {
 
+    public DateTimeValue() {
+    }
+
     private DateTime value;
 
     public DateTimeValue(DateTime value) {
