@@ -91,7 +91,7 @@ public class IntegerValue extends Value {
 
     @Override
     public IntegerValue create(String s) {
-        return new IntegerValue(new Integer(s));
+        return new IntegerValue((Integer)(Math.round(new Float(s))));
     }
 
     @Override

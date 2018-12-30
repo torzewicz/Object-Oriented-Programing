@@ -2,6 +2,8 @@ package com.obiektowe.GUIhelpers;
 
 import javafx.event.Event;
 import javafx.geometry.HPos;
+import javafx.geometry.Insets;
+import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -46,13 +48,19 @@ public class PreDataFrameBox {
         });
 
         GridPane gridPane = new GridPane();
+        gridPane.setPadding(new Insets(10, 10, 10, 10));
+        gridPane.setVgap(8);
+        gridPane.setHgap(10);
         Text mainText = new Text("Select values for columns");
 
         GridPane.setColumnSpan(mainText, dataString.length + 1);
         GridPane.setHalignment(mainText, HPos.CENTER);
         gridPane.getChildren().add(mainText);
-
-        GridPane.setConstraints(button, 0, 4);
+        GridPane.setColumnSpan(button, 3);
+        GridPane.setRowSpan(button, 3);
+        GridPane.setConstraints(button, 0, 3);
+        GridPane.setHalignment(button, HPos.CENTER);
+        GridPane.setValignment(button, VPos.BOTTOM);
         gridPane.getChildren().add(button);
 
 
@@ -73,6 +81,4 @@ public class PreDataFrameBox {
         window.showAndWait();
         return answer;
     }
-
-
 }

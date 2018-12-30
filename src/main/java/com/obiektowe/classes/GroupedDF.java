@@ -1,9 +1,11 @@
 package com.obiektowe.classes;
 
+import com.obiektowe.classes.Applyable.*;
 import com.obiektowe.classes.Exceptions.NotEqualListsSizeException;
 import com.obiektowe.classes.Exceptions.WrongInsertionTypeException;
 import com.obiektowe.classes.Interfaces.Applyable;
 import com.obiektowe.classes.Interfaces.Groupby;
+import com.obiektowe.classes.utils.DataFrameUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -14,10 +16,16 @@ public class GroupedDF implements Groupby {
 
     private List<DataFrame> dataFrames;
 
+    private DataFrame mainDataFrame;
+
+    public String[] groupedByCols;
+
     public GroupedDF(String[] colNames, DataFrame dataFrame) throws NotEqualListsSizeException, WrongInsertionTypeException {
         dataFrames = new LinkedList<>();
         List<Col> allCols = dataFrame.getCols();
         List<Col> sortByCols = new ArrayList<>();
+        this.groupedByCols = colNames;
+        this.mainDataFrame = dataFrame;
 
         for (String s : colNames) {
             sortByCols.add(dataFrame.get(s)); // Group by these cols
@@ -39,8 +47,6 @@ public class GroupedDF implements Groupby {
                 }
 
             }
-
-            System.out.println(groupByObjects);
 
             int numberOfDF = (int) sortByCol.getObjects().stream().map(i -> i.toString()).distinct().count(); // How many DF there will be
 
@@ -69,8 +75,6 @@ public class GroupedDF implements Groupby {
                     }
 
                 }
-
-                System.out.println(insertionObjects + " " + indexes);
 
                 boolean inserted = false;
 
@@ -106,37 +110,78 @@ public class GroupedDF implements Groupby {
 
     @Override
     public DataFrame apply(Applyable applyable) {
-        return null;
+        try {
+            return applyable.apply(this.mainDataFrame);
+        } catch (WrongInsertionTypeException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
     public DataFrame max() {
-        return null;
+        DataFrame dataFrame = removeCol();
+        try {
+            return new Maximum().apply(dataFrame);
+        } catch (WrongInsertionTypeException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
     public DataFrame min() {
-        return null;
+        DataFrame dataFrame = removeCol();
+        try {
+            return new Minimum().apply(dataFrame);
+        } catch (WrongInsertionTypeException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
     public DataFrame mean() {
-        return null;
+        DataFrame dataFrame = removeCol();
+        try {
+            return new Mean().apply(dataFrame);
+        } catch (WrongInsertionTypeException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
     public DataFrame std() {
-        return null;
+        DataFrame dataFrame = removeCol();
+        try {
+            return new Standard().apply(dataFrame);
+        } catch (WrongInsertionTypeException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
     public DataFrame sum() {
-        return null;
+        DataFrame dataFrame = removeCol();
+        try {
+            return new Sum().apply(dataFrame);
+        } catch (WrongInsertionTypeException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
     public DataFrame var() {
-        return null;
+        DataFrame dataFrame = removeCol();
+        try {
+            return new Variance().apply(dataFrame);
+        } catch (WrongInsertionTypeException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public List<DataFrame> getDataFrames() {
@@ -145,6 +190,21 @@ public class GroupedDF implements Groupby {
 
     public void setDataFrames(List<DataFrame> dataFrames) {
         this.dataFrames = dataFrames;
+    }
+
+    private DataFrame removeCol() {
+        DataFrame updatedDataFrame = new DataFrame(this.mainDataFrame.getCols());
+        Iterator<Col> iterator = updatedDataFrame.getCols().iterator();
+
+        while (iterator.hasNext()) {
+            Col col = iterator.next();
+            for (String name : this.groupedByCols) {
+                if (col.getName().equals(name)) {
+                    iterator.remove();
+                }
+            }
+        }
+        return updatedDataFrame;
     }
 
 }

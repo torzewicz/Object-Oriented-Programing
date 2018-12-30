@@ -31,7 +31,7 @@ public class DataFrame {
     }
 
     public DataFrame(List cols) {
-        this.cols = cols;
+        this.cols = new ArrayList<>(cols);
     }
 
     protected DataFrame(Col col) {
@@ -61,8 +61,6 @@ public class DataFrame {
         for (int a = 0; a < colsTypes.length; a++) {
             this.cols.add(new Col(names[a], colsTypes[a]));
         }
-
-//        bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream));
 
         while ((strLine = bufferedReader.readLine()) != null) {
 
@@ -147,8 +145,12 @@ public class DataFrame {
         return new DataFrame(this.cols.subList(from, to));
     }
 
+    public GroupedDF groupby(String... cols) throws NotEqualListsSizeException, WrongInsertionTypeException {
+        return new GroupedDF(cols, this);
+    }
 
     public DataFrame getDataFrame() {
         return this;
     }
+
 }

@@ -35,9 +35,8 @@ public class Standard implements Applyable {
 
             } else if (col.getObjects().get(0) instanceof StringValue) {
                 Double standard = Math.sqrt(new Double(col.getObjects().get(0).toString()));
-
                 Col colToAdd = new Col(col.getName(), col.getType());
-                colToAdd.add(new StringValue(variance.toString()));
+                colToAdd.add(new StringValue(standard.toString()));
                 newCols.add(colToAdd);
             } else {
                 Double standard = Math.sqrt((double) ((DateTime) col.getObjects().get(0)).getMillis());

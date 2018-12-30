@@ -20,12 +20,12 @@ public class Minimum implements Applyable {
         for (Col col : dataFrame.getCols()) {
 
             if (col.getObjects().get(0) instanceof DoubleValue || col.getObjects().get(0) instanceof FloatValue || col.getObjects().get(0) instanceof IntegerValue) {
-                Double min = col.getObjects().stream().map(i -> ((Value) i).getInstance()).map(i -> (Double) i).min(Comparator.comparing(Double::valueOf)).get();
+                Double min = col.getObjects().stream().map(i -> ((Value) i).getInstance()).map(i -> new Double(i.toString())).min(Comparator.comparing(Double::valueOf)).get();
                 Col colToAdd = new Col(col.getName(), "DoubleValue");
                 colToAdd.add(new DoubleValue(min));
                 newCols.add(colToAdd);
             } else if (col.getObjects().get(0) instanceof BooleanValue) {
-                Boolean min = (Boolean) col.getObjects().stream().map(i -> ((Value) i).getInstance()).filter(i -> i.equals(true)).findFirst().get();
+                Boolean min = (Boolean) col.getObjects().stream().map(i -> ((Value) i).getInstance()).filter(i -> i.equals(true)).findFirst().orElse(false);
                 Col colToAdd = new Col(col.getName(), col.getType());
                 colToAdd.add(new BooleanValue(min));
                 newCols.add(colToAdd);

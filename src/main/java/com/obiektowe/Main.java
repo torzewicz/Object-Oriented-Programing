@@ -1,5 +1,6 @@
 package com.obiektowe;
 
+import com.obiektowe.classes.Applyable.Maximum;
 import com.obiektowe.classes.Col;
 import com.obiektowe.classes.DataFrame;
 import com.obiektowe.classes.Exceptions.NotEqualListsSizeException;
@@ -51,79 +52,20 @@ public class Main {
         objects.addAll(Arrays.asList(new ImmutablePair<>("Imie", new StringValue("Dominik")), new ImmutablePair<>("Nazwisko", new StringValue("Smith")), new ImmutablePair<>("Wiek", new IntegerValue(26))));
         objects.addAll(Arrays.asList(new ImmutablePair<>("Imie", new StringValue("Pawel")), new ImmutablePair<>("Nazwisko", new StringValue("Abc")), new ImmutablePair<>("Wiek", new IntegerValue(65))));
 
-//        dataFrame.dropDatabase();
-
         try {
             insert(dataFrame, objects);
         } catch (WrongInsertionTypeException e) {
             e.printStackTrace();
         }
 
-
-//        dataFrame.dropDatabase();
-
-        dropDatabase(dataFrame);
-
-        String[] colName = {"Imie"};
-
-        GroupedDF groupedDF = null;
-
-
         try {
-            groupedDF = new GroupedDF(colName, dataFrame);
+            DataFrame dataFrame1 = dataFrame.groupby("Imie").apply(new Maximum());
+            dropDatabase(dataFrame1);
         } catch (NotEqualListsSizeException e) {
             e.printStackTrace();
         } catch (WrongInsertionTypeException e) {
             e.printStackTrace();
         }
-
-
-        for (DataFrame dataFrame1 : groupedDF.getDataFrames()) {
-//            dropDatabase(dataFrame1);
-//            System.out.println(dataFrame1.getCols());
-            for (Col col : dataFrame1.getCols()) {
-                System.out.print(col.getName() + " " + col.getType() + " ");
-                System.out.println(col.getObjects());
-            }
-
-            System.out.println();
-        }
-
-//        String[] types2 = {"FloatValue", "FloatValue", "FloatValue"};
-//        String[] names2 = {"AA", "BB", "CC"};
-////
-//        DataFrame dataFrame1 = null;
-
-//        try {
-//            dataFrame1 = new DataFrame("src/main/resources/data.csv", types2, true);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//        DataFrameUtils.dropDatabase(dataFrame1,10);
-
-
-//        SparseDataFrame sparseDataFrame = null;
-//        try {
-//            sparseDataFrame = new SparseDataFrame(dataFrame, "dupa");
-//        } catch (WrongInsertionTypeException e) {
-//            e.printStackTrace();
-//        }
-
-//        try {
-//            sparseDataFrame = new SparseDataFrame("src/main/resources/sparse.csv", types2,true, "0.0");
-//        } catch (Exception e) {
-//            System.out.println("EEEE");
-//            e.printStackTrace();
-//        }
-
-
-//        System.out.println(sparseDataFrame.getCols());
-
-
-//        sparseDataFrame.dropDatabase(10);
-
-//        dropDatabase(sparseDataFrame, 10);
 
     }
 }

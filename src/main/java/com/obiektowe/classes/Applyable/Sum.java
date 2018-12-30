@@ -22,7 +22,7 @@ public class Sum implements Applyable {
 
             if (col.getObjects().get(0) instanceof DoubleValue || col.getObjects().get(0) instanceof FloatValue || col.getObjects().get(0) instanceof IntegerValue) {
 
-                Double sum = col.getObjects().stream().map(i -> ((Value) i).getInstance()).mapToDouble(i -> (Double) i).sum();
+                Double sum = col.getObjects().stream().map(i -> ((Value) i).getInstance()).mapToDouble(i -> new Double(i.toString())).sum();
                 Col colToAdd = new Col(col.getName(), "DoubleValue");
                 colToAdd.add(new DoubleValue(sum));
                 newCols.add(colToAdd);

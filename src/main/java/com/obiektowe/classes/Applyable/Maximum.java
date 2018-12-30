@@ -17,16 +17,14 @@ public class Maximum implements Applyable {
 
         List<Col> newCols = new ArrayList<>();
 
-
         for (Col col : dataFrame.getCols()) {
-
             if (col.getObjects().get(0) instanceof DoubleValue || col.getObjects().get(0) instanceof FloatValue || col.getObjects().get(0) instanceof IntegerValue) {
-                Double max = col.getObjects().stream().map(i -> ((Value) i).getInstance()).map(i -> (Double) i).max(Comparator.comparing(Double::valueOf)).get();
+                Double max = col.getObjects().stream().map(i -> ((Value) i).getInstance()).map(i -> new Double(i.toString())).max(Comparator.comparing(Double::valueOf)).get();
                 Col colToAdd = new Col(col.getName(), "DoubleValue");
                 colToAdd.add(new DoubleValue(max));
                 newCols.add(colToAdd);
             } else if (col.getObjects().get(0) instanceof BooleanValue) {
-                Boolean max = (Boolean) col.getObjects().stream().map(i -> ((Value) i).getInstance()).filter(i -> i.equals(true)).findFirst().get();
+                Boolean max = (Boolean) col.getObjects().stream().map(i -> ((Value) i).getInstance()).filter(i -> i.equals(true)).findFirst().orElse(false);
                 Col colToAdd = new Col(col.getName(), col.getType());
                 colToAdd.add(new BooleanValue(max));
                 newCols.add(colToAdd);
