@@ -2,18 +2,17 @@ package com.obiektowe.GUIhelpers;
 
 import com.obiektowe.classes.Col;
 import com.obiektowe.classes.DataFrame;
+import com.obiektowe.classes.DataFrameDB;
 import com.obiektowe.classes.Exceptions.NotEqualListsSizeException;
 import com.obiektowe.classes.Exceptions.WrongInsertionTypeException;
 import com.obiektowe.classes.GroupedDF;
 import com.obiektowe.classes.Interfaces.Applyable;
 import com.obiektowe.classes.Value.Value;
-import com.sun.imageio.plugins.gif.GIFImageReader;
 import javafx.event.Event;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -33,8 +32,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.List;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 import static com.obiektowe.GUIhelpers.AlertBox.display;
@@ -52,7 +52,7 @@ public class GuiUtils {
 
         DataFrame currentDataFrame = null;
 
-        while(!isCorrectForm) {
+        while (!isCorrectForm) {
             try {
 
                 String[] necessaryKnowledge = handlePrecautions(file);
@@ -68,43 +68,103 @@ public class GuiUtils {
         return new ImmutablePair<>(scrollPane, currentDataFrame);
     }
 
-    private static Pair<ScrollPane, GridPane> createScrollPaneAndGridPane(DataFrame currentDataFrame, boolean displayType)  {
+    private static Pair<ScrollPane, GridPane> createScrollPaneAndGridPane(DataFrame currentDataFrame, boolean displayType) {
         ScrollPane scrollPane = new ScrollPane();
         GridPane gridPane = new GridPane();
         gridPane.setPadding(new Insets(10, 10, 10, 10));
         gridPane.setVgap(8);
         gridPane.setHgap(10);
         int currentColumn = 0;
+
+        ThreadPoolExecutor threadPoolExecutor = new ScheduledThreadPoolExecutor(currentDataFrame.size());
+
+        LinkedList<Future<?>> futures = new LinkedList<>();
+
         for (Col col : currentDataFrame.getCols()) {
 
-            Text name = new Text(col.getName());
-            GridPane.setConstraints(name, currentColumn, 0);
-            GridPane.setHalignment(name, HPos.CENTER);
-            gridPane.getChildren().add(name);
+            int finalCurrentColumn = currentColumn;
+            futures.add(threadPoolExecutor.submit(() -> {
 
-            if (displayType) {
-                Text type = new Text(col.getType());
-                GridPane.setConstraints(type, currentColumn, 1);
-                GridPane.setHalignment(type, HPos.CENTER);
-                gridPane.getChildren().add(type);
-            }
+            ThreadPoolExecutor innerThreadPoolExecutor = new ScheduledThreadPoolExecutor(10);
+
+                LinkedList<Future<?>> innerFutures = new LinkedList<>();
+
+                System.out.println(col.getName());
+
+                Text name = new Text(col.getName());
+                GridPane.setConstraints(name, finalCurrentColumn, 0);
+                GridPane.setHalignment(name, HPos.CENTER);
+                try {
+                    synchronized (gridPane) {
+                        gridPane.getChildren().add(name);
+                    }
+
+                } catch (IllegalArgumentException e) {
+                    e.printStackTrace();
+                }
+
+                if (displayType) {
+                    Text type = new Text(col.getType());
+                    GridPane.setConstraints(type, finalCurrentColumn, 1);
+                    GridPane.setHalignment(type, HPos.CENTER);
+                    synchronized (gridPane) {
+                        gridPane.getChildren().add(type);
+                    }
+                }
+
+                int currentRow = 2;
+
+                int numberOfObject = col.getObjects().size() <= 100 ? col.getObjects().size() : 100;
+                for (int i = 0; i < numberOfObject; i++) {
+                    int finalCurrentRow = currentRow;
+                    int finalI = i;
+                    innerFutures.add(innerThreadPoolExecutor.submit(() -> {
+                        Text currentObject = new Text(col.getObjects().get(finalI).toString());
+
+                        GridPane.setConstraints(currentObject, finalCurrentColumn, finalCurrentRow);
+                        GridPane.setHalignment(currentObject, HPos.CENTER);
+                        try {
+                            synchronized (gridPane) {
+                                gridPane.getChildren().add(currentObject);
+                            }
+                        } catch (IllegalArgumentException e) {
+                            e.printStackTrace();
+                        }
+                    }));
+
+                    currentRow++;
+                }
 
 
-            int currentRow = 2;
-            for (Object object : col.getObjects()) {
-                Text currentObject = new Text(object.toString());
+                for (Future<?> future : innerFutures) {
+                    try {
+                        future.get();
+                    } catch (InterruptedException | ExecutionException | IllegalArgumentException | NullPointerException e) {
+                        e.printStackTrace();
+                    }
+                }
 
-                GridPane.setConstraints(currentObject, currentColumn, currentRow);
-                GridPane.setHalignment(currentObject, HPos.CENTER);
-
-                gridPane.getChildren().add(currentObject);
-                currentRow++;
-            }
+            }));
 
             currentColumn++;
         }
+
+        for (Future<?> future : futures) {
+            try {
+                future.get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+
+        System.out.println("Done");
+
         gridPane.setAlignment(Pos.TOP_CENTER);
         scrollPane.setContent(gridPane);
+
+        System.out.println(gridPane.getChildren().
+
+                size());
         return new ImmutablePair<>(scrollPane, gridPane);
     }
 
@@ -134,7 +194,7 @@ public class GuiUtils {
         return dataString;
     }
 
-    public static GridPane prepareUtils(DataFrame dataFrame, BorderPane borderPane, Stage window) {
+    public static GridPane prepareUtils(DataFrame dataFrame, BorderPane borderPane) {
 
         List<Pair<String, String>> operations = Arrays.asList(
                 new ImmutablePair<>("Maximum", "max"),
@@ -173,10 +233,10 @@ public class GuiUtils {
             GridPane.setConstraints(operationButton, currentColumn, currentRow);
             GridPane.setHalignment(operationButton, HPos.CENTER);
             currentColumn++;
-            operationButton.setMinSize(80,20);
+            operationButton.setMinSize(80, 20);
 
-            if (operations.indexOf(pair) > 0 && (operations.indexOf(pair)  + 1) % 3 == 0) {
-                currentRow ++;
+            if (operations.indexOf(pair) > 0 && (operations.indexOf(pair) + 1) % 3 == 0) {
+                currentRow++;
                 currentColumn = 0;
             }
 
@@ -209,7 +269,7 @@ public class GuiUtils {
         GridPane.setHalignment(switchTo2dChartView, HPos.CENTER);
 
         switchTo2dChartView.setOnAction(i -> {
-            showNewSceneWithChart(borderPane, window, dataFrame);
+            showNewSceneWithChart(borderPane, dataFrame);
         });
 
         gridPane.getChildren().addAll(button, colName, switchTo2dChartView, currentStateMessage);
@@ -229,10 +289,10 @@ public class GuiUtils {
         return answer;
     }
 
-    private static Pair<ScrollPane,GroupedDF> displayGroupedDataFrames(String colName, DataFrame currentDataFrame) throws NotEqualListsSizeException, WrongInsertionTypeException {
+    private static Pair<ScrollPane, GroupedDF> displayGroupedDataFrames(String colName, DataFrame currentDataFrame) throws NotEqualListsSizeException, WrongInsertionTypeException {
         ScrollPane scrollPane = new ScrollPane();
         VBox vBox = new VBox();
-        GroupedDF groupedDF = currentDataFrame.groupby(colName);
+        GroupedDF groupedDF = currentDataFrame.groupBy(colName);
 
         for (DataFrame dataFrame : groupedDF.getDataFrames()) {
             vBox.getChildren().add(createScrollPaneAndGridPane(dataFrame, false).getValue());
@@ -242,12 +302,12 @@ public class GuiUtils {
     }
 
     private static void adaptUtilsView(GroupedDF groupedDF, List<Pair<String, String>> operations, BorderPane borderPane) {
-        GridPane gridPane = ((GridPane)borderPane.getLeft());
-        ((Text)gridPane.getChildren().get(gridPane.getChildren().size() - 1)).setText("Perform operation on columns without: " + groupedDF.groupedByCols[0]);
-        for(Node node : gridPane.getChildren()) {
-            if (node.getClass().getSimpleName().equals("Button") && !((Button)node).getText().equals("Group by:")) {
+        GridPane gridPane = ((GridPane) borderPane.getLeft());
+        ((Text) gridPane.getChildren().get(gridPane.getChildren().size() - 1)).setText("Perform operation on columns without: " + groupedDF.groupedByCols[0]);
+        for (Node node : gridPane.getChildren()) {
+            if (node.getClass().getSimpleName().equals("Button") && !((Button) node).getText().equals("Group by:")) {
                 for (Pair<String, String> pair : operations) {
-                    if (((Button)node).getText().equals(pair.getKey())) {
+                    if (((Button) node).getText().equals(pair.getKey())) {
                         ((Button) node).setOnAction(i -> {
                             GridPane dataFrameAfterOperationWithoutCol = createCustomGridPaneForGroupedOperations(groupedDF, pair);
                             borderPane.setCenter(dataFrameAfterOperationWithoutCol);
@@ -316,14 +376,8 @@ public class GuiUtils {
         DataFrame dataFrameAfterOperation = null;
 
         try {
-            dataFrameAfterOperation = dataFrame.groupby(dataFrame.getCols().get(0).getName()).apply((Applyable) instance.newInstance());
-        } catch (NotEqualListsSizeException e) {
-            e.printStackTrace();
-        } catch (WrongInsertionTypeException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
+            dataFrameAfterOperation = dataFrame.groupBy(dataFrame.getCols().get(0).getName()).apply((Applyable) instance.newInstance());
+        } catch (NotEqualListsSizeException | WrongInsertionTypeException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
 
@@ -349,18 +403,19 @@ public class GuiUtils {
         return gridPane;
     }
 
-    private static void showNewSceneWithChart(BorderPane borderPane, Stage window, DataFrame dataFrame) {
-        BorderPane chartBorderPane = new BorderPane();
-        chartBorderPane.setTop(borderPane.getTop());
+    private static void showNewSceneWithChart(BorderPane borderPane, DataFrame dataFrame) {
 
-        Scene oldScene = window.getScene();
+        Node oldCenter = borderPane.getCenter();
+        Node oldLeft = borderPane.getLeft();
+        Node oldRight = borderPane.getRight();
+
         GridPane leftGridPane = new GridPane();
 
         leftGridPane.setPadding(new Insets(10, 10, 10, 10));
         leftGridPane.setVgap(8);
         leftGridPane.setHgap(10);
 
-        String[] possibilities = dataFrame.getCols().stream().map(i -> i.getName()).collect(Collectors.toList()).toArray(new String[dataFrame.getCols().size()]);
+        String[] possibilities = dataFrame.getCols().stream().map(Col::getName).collect(Collectors.toList()).toArray(new String[dataFrame.getCols().size()]);
         String[] xColYCol = new String[2];
 
         ChoiceBox<String>[] choiceBoxes = new ChoiceBox[2];
@@ -371,14 +426,14 @@ public class GuiUtils {
                 xColYCol[a] = choiceBoxes[a].getValue();
             }
 
-            chartBorderPane.setCenter(display2DChart(dataFrame, xColYCol));
+            borderPane.setCenter(display2DChart(dataFrame, xColYCol));
         });
         GridPane.setColumnSpan(submitButton, 3);
         GridPane.setConstraints(submitButton, 0, 2);
         GridPane.setHalignment(submitButton, HPos.CENTER);
 
 
-        for (int i =0; i < 2; i++ ) {
+        for (int i = 0; i < 2; i++) {
             Text text = i == 0 ? new Text("Set Col for X axis:") : new Text("Set Col for Y axis:");
             GridPane.setConstraints(text, 0, i);
             GridPane.setHalignment(text, HPos.CENTER);
@@ -394,7 +449,9 @@ public class GuiUtils {
         Button backToPreviousViewButton = new Button("Back to previous view");
 
         backToPreviousViewButton.setOnAction(i -> {
-            window.setScene(oldScene);
+            borderPane.setCenter(oldCenter);
+            borderPane.setLeft(oldLeft);
+            borderPane.setRight(oldRight);
         });
 
 
@@ -404,11 +461,9 @@ public class GuiUtils {
 
         leftGridPane.getChildren().add(backToPreviousViewButton);
 
-        chartBorderPane.setLeft(leftGridPane);
-
-        Scene scene = new Scene(chartBorderPane, 1120, 630);
-
-        window.setScene(scene);
+        borderPane.setLeft(leftGridPane);
+        borderPane.setCenter(null);
+        borderPane.setRight(null);
     }
 
     private static LineChart display2DChart(DataFrame dataFrame, String[] xAndY) {
@@ -429,14 +484,51 @@ public class GuiUtils {
         series.setName("Data");
 
         for (int i = 0; i < xCol.getObjects().size(); i++) {
-            series.getData().add(new XYChart.Data(((Value)xCol.getObjects().get(i)).getValue(), ((Value)yCol.getObjects().get(i)).getValue()));
+            series.getData().add(new XYChart.Data(((Value) xCol.getObjects().get(i)).getValue(), ((Value) yCol.getObjects().get(i)).getValue()));
         }
 
         lineChart.getData().add(series);
 
 
         return lineChart;
+    }
 
+    public static GridPane displayBottomGridPane(boolean isConnectedToDB) {
+        DataFrameDB dataFrameDB = new DataFrameDB();
+        GridPane bottomGridPane = new GridPane();
+        bottomGridPane.setPadding(new Insets(10, 10, 10, 10));
+        bottomGridPane.setVgap(8);
+        bottomGridPane.setHgap(10);
+        Button connectToDbButton = new Button("Connect");
+        Button disconnectButton = new Button("Disconnect");
+        disconnectButton.setDisable(true);
+
+        connectToDbButton.setOnAction(i -> {
+            LogToDatabaseBox.display(dataFrameDB);
+            if (dataFrameDB.isConnected) {
+                disconnectButton.setDisable(false);
+                connectToDbButton.setDisable(true);
+            }
+        });
+
+        disconnectButton.setOnAction(i -> {
+            if (ConfirmBox.display("Disconnect", "Are you sure?")) {
+                try {
+                    dataFrameDB.disconnect();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                disconnectButton.setDisable(true);
+                connectToDbButton.setDisable(false);
+            }
+        });
+
+        GridPane.setConstraints(connectToDbButton, 0, 0);
+        GridPane.setConstraints(disconnectButton, 1, 0);
+
+        bottomGridPane.getChildren().addAll(connectToDbButton, disconnectButton);
+
+        return bottomGridPane;
     }
 
 }

@@ -121,34 +121,19 @@ public class GroupedDF implements Groupby {
     @Override
     public DataFrame max() {
         DataFrame dataFrame = removeCol();
-        try {
             return new Maximum().apply(dataFrame);
-        } catch (WrongInsertionTypeException e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 
     @Override
     public DataFrame min() {
         DataFrame dataFrame = removeCol();
-        try {
-            return new Minimum().apply(dataFrame);
-        } catch (WrongInsertionTypeException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return new Minimum().apply(dataFrame);
     }
 
     @Override
     public DataFrame mean() {
         DataFrame dataFrame = removeCol();
-        try {
-            return new Mean().apply(dataFrame);
-        } catch (WrongInsertionTypeException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return new Mean().apply(dataFrame);
     }
 
     @Override

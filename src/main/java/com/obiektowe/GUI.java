@@ -1,5 +1,6 @@
 package com.obiektowe;
 
+import com.obiektowe.GUIhelpers.GuiUtils;
 import com.obiektowe.classes.DataFrame;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -7,6 +8,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.tuple.Pair;
@@ -22,6 +24,7 @@ public class GUI extends Application {
     private Stage window;
     private Scene scene;
     private BorderPane borderPane;
+    private boolean isConnectedToDB = false;
 
     @Override
     public void start(Stage primaryStage) {
@@ -40,17 +43,6 @@ public class GUI extends Application {
 
         MenuItem newDataFrame = new MenuItem("New DataFrame");
 
-        newDataFrame.setOnAction(i -> {
-            Pair<ScrollPane, DataFrame> currentWorkBench = null;
-            try {
-                currentWorkBench = displayDataFrame(window);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            borderPane.setRight(currentWorkBench.getKey());
-            borderPane.setLeft(prepareUtils(currentWorkBench.getValue(), borderPane, window));
-        });
-
         MenuItem exitMenuItem = new MenuItem("Exit");
         exitMenuItem.setOnAction(i -> handleExit(i, window));
 
@@ -67,6 +59,18 @@ public class GUI extends Application {
         menuBar.getMenus().addAll(fileMenu, edit, view, help);
 
         borderPane.setTop(menuBar);
+        borderPane.setBottom(GuiUtils.displayBottomGridPane(isConnectedToDB));
+
+        newDataFrame.setOnAction(i -> {
+            Pair<ScrollPane, DataFrame> currentWorkBench = null;
+            try {
+                currentWorkBench = displayDataFrame(window);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            borderPane.setRight(currentWorkBench.getKey());
+            borderPane.setLeft(prepareUtils(currentWorkBench.getValue(), borderPane));
+        });
 
         scene = new Scene(borderPane, 1120, 630);
 
